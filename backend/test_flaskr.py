@@ -63,6 +63,18 @@ class TriviaTestCase(unittest.TestCase):
         self.assertIn('categories', data)
         self.assertGreater(len(data['categories']), 0)
 
+    def test_404_get_categories_when_none_exist(self):
+        with self.app.app_context():
+            Category.query.delete()
+            db.session.commit()
+
+        res = self.client.get('/categories')
+        data = res.get_json()
+
+        self.assertEqual(res.status_code, 404)
+        self.assertFalse(data['success'])
+        self.assertEqual(data['message'], 'resource not found')
+
     # ------------------------------------------------------------------
     # GET /questions
     # ------------------------------------------------------------------
